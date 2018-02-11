@@ -1,0 +1,178 @@
+Q1.
+
+# Assume graph[node] can get all neighbours of node
+def GetNode(source, d):
+	queue = [source]
+	visited = []
+	next = []
+	level = 0
+	while queue and level < d:
+		next = []
+		while queue:
+			cur = queue.pop(0)
+			if cur not in visited:
+				visited.append(cur)
+				for neighbour in graph[cur]:
+					if neighbour not in visited:
+						next.append(neighbour)
+
+		level += 1
+		queue = next
+
+	if not next:
+		# The max distance is less than d, return an invalid value
+		return -1
+	else:
+		# next store the nodes at distance d from source
+		min = next[0]
+		for i in range(1, len(next)):
+			if (next[i] < min):
+				min = next[i]
+
+		return min
+
+
+Q2.
+
+Because for a graph G, if it doesn't contain a cycle, the maximum edges it 
+can contain is V - 1 = number of vertices - 1. Therefore, we can use DFS on
+the graph and traversal at most V - 1 edges to detect whether there is a loop.
+Thus O(|V|), However we will need to store the parent because parent is also
+a neighbour to the current node in undirected graph.
+
+# Assume graph[node] can get all neighbours of node
+def detect_loop(start):
+	stack = [(start, None)]
+	visited = []
+
+	while stack:
+		cur, parent = stack.pop()
+		visited.append(cur)
+		for neighbour in graph[cur]:
+			if neighbour in visited and neighbour != parent:
+				return True
+			else:
+				stack.append((neighbour, cur))
+
+	return False
+
+
+Q3.
+
+1. If the graph doesn't contain a cycle, it means G is a DAG, therefore,
+we can use topological sorting on G, then if the graph contains more than
+one topological order, it is not semi-connected, otherwise it is.
+
+Correctness proof: as within the topological order, it gurantees for each i,
+there is an edge(vi, vi+1) => for each i,j, there is vi -> vi+1 -> ... -> vj-1 -> vj, thus semi-connected.
+
+Here we can use Kahn's algorithm to get the topological sorting order:
+
+L ← Empty list that will contain the sorted elements
+S ← Set of all nodes with no incoming edges
+while S is non-empty do
+    remove a node n from S (<----- This line)
+    add n to tail of L
+    for each node m with an edge e from n to m do
+        remove edge e from the graph
+        if m has no other incoming edges then
+            insert m into S
+if graph has edges then
+    return error (graph has at least one cycle)
+else 
+    return L (a topologically sorted order)
+
+If we can remove more than one node at the (<--- This line), it means it contains
+more than one topological order.
+
+2. The algorithm is as following:
+a) Extract the strongly connected components
+b) For each SCC, build the component graph, which is a DAG of the SCC, as G'
+c) For every G', do topological order as 1. does.
+d) Again, check whether there is more than one topological order for each DAG G'
+
+The complexity is O(V + E). This is because for any two nodes, if a and b are in two different SCCs, there is a path from one SCC to the other, thus from a to b.
+
+
+Q4.
+
+In this question we use DFS written in Python 2.7 to implement the game.
+Let a state = [], whose size is 9, the first 8 elements represent the passengers,
+the last bit is the position of the boat.
+
+# Store the indices of the people
+policeman = 0
+father = 1
+mother = 2
+sons = [3, 4]
+daughter = [5, 6]
+thief = 7
+boat = 8
+driver_index = [policeman, father, mother]
+
+# The start and end state
+Start = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+End = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+def isValidState(state):
+	if state[father] == state[daughter[0]] != state[mother]:
+		return False
+	if state[father] == state[daughter[1]] != state[mother]:
+		return False
+	if state[mother] == state[sons[0]] != state[father]:
+		return False
+	if state[mother] == state[sons[1]] != state[father]:
+		return False
+	if state[policeman] != state[thief]:
+		for i in range(1, boat):
+			if state[i] == state[thief]:
+				return False
+	return True
+
+def expand(cur):
+	expand_list = []
+	
+	# We need to ensure two people on the boat, and we need father
+	# mother or policeman to drive the raft
+	direction = 1 ^ cur[boat]
+	for driver in driver_index:
+		# Find a valid driver
+		if cur[driver] == cur[boat]:
+			for i in range(8):
+				if i != driver:
+					next_state = cur[:]
+					next_state[driver] = next_state[i] = next_state[boat] = direction
+					if isValidState(next_state):
+						expand_list.append(next_state)
+
+	return expand_list
+
+def cross_helper(path, visited, cur):
+	if cur == End:
+		path = visited[:]
+		return True
+	else:
+		next = expand(cur)
+		for next_move in next:
+			if next_move not in visited:
+				# Backtracking
+				visited.append(next_move)
+				if cross_helper(path, visited, next_move):
+					return True
+				visited.pop()
+
+		# No path found
+		return False
+
+def cross():
+	path = []
+	visited = [Start]
+	found = cross_helper(path, visited, Start)
+	if found:
+		print 'The solution is: ', path
+	else:
+		print 'No solution found'
+
+# Call cross() in main function
+cross()
+

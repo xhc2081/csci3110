@@ -1,0 +1,225 @@
+1.
+class MinStack:
+	def __init__(self):
+		self.stack=[]
+		self.min_stack=[]
+
+	def push(self, x):
+		self.stack.append(x)
+		if(len(self.min_stack)):
+			if(self.min_stack[-1]>x):
+				self.min_stack.append(x)
+		else:
+			self.min_stack.append(x)
+
+	def top(self):
+		if(len(self.stack)):
+			return self.stack[-1]
+		else:
+			print "No element in the top of the stack"
+
+	def pop(self):
+		if(len(self.stack)):
+			ele = self.stack[-1]
+			if(ele == self.min_stack[-1]):
+				self.min_stack = self.min_stack[:-1] 
+			self.stack = self.stack[:-1]
+		else:
+			print "No element in the stack"
+
+	def min(self):
+		if(len(self.min_stack)):
+			return self.min_stack[-1]
+		else:
+			print "No element in the stack"
+
+if __name__ == '__main__':
+	stack = MinStack()
+	stack.push(3)
+	print "Min element is ", stack.min()
+	stack.push(2)
+	print "Min element is ", stack.min()
+	stack.push(1)
+	print "Min element is ", stack.min()
+	stack.push(4)
+	print "Min element is ", stack.min()
+	stack.push(5)
+	print "Min element is ", stack.min()
+	stack.pop()
+	stack.pop()
+	stack.push(-1)
+	print "Min element is ", stack.min()
+	
+2.
+class Node:
+	def __init__(self, data, next_node):
+		self.data = data
+		self.next = next_node
+		
+class LinkedList:
+	def __init__(self):
+		self.head = None
+
+	def add(self, val):
+		node = Node(val)
+		if(self.head == None):
+			self.head = node
+		else:
+			curr = self.head
+			while curr.next!=None:
+				curr = curr.next
+			curr.next = node
+
+	def has_cycle(self):
+		slow = self.head
+		fast = self.head
+
+		while fast:
+			slow = slow.next
+			fast = fast.next
+			if fast:
+				fast = fast.next
+				if fast is slow:
+					return True
+		return False
+
+	def find_cycle_and_start(self):
+		slow = self.head
+		fast = self.head
+
+		while fast:
+			slow = slow.next
+			fast = fast.next
+			if fast:
+				fast = fast.next
+				if fast is slow:
+					break
+		else:
+			return (False, None)
+		
+		fast = self.head
+		while fast is not slow:
+			fast = fast.next
+			slow = slow.next
+		return (True, fast)
+
+if __name__ == '__main__':
+	node1 = Node(1, Node(2, None))
+	node2= Node(4, node1)
+	node1.next.next=node2
+	start = Node(3, node2)
+
+	linkedList = LinkedList()
+	linkedList.head = start
+
+	print linkedList.has_cycle()
+	print "The start node of the cycle has value", linkedList.find_cycle_and_start()[1].data
+
+
+3.
+class Node:
+	def __init__(self, data, left_node, right_node):
+		self.data = data
+		self.left = left_node
+		self.right = right_node
+
+# The closest ancestor is equivalent to the longest common ancestor
+def lca(node, n1, n2):
+	if find(node.left, n1) and find(node.left, n2):
+		return lca(node.left, n1, n2)
+	if find(node.right, n1) and find(node.right, n2):
+		return lca(node.right, n1, n2)
+	return node
+
+def find(node, n):
+	if node is None: return False
+	if node == n: return True
+	return find(node.left, n) or find(node.right, n)
+
+def check_lca(root, inp1, inp2):
+	# check if the inputs are present in the tree
+	if(find(root, inp1) and find(root, inp2)):
+		anc = lca(root, inp1, inp2)
+		if(anc is None):
+			return False
+		else:
+			print "The closest ancestor to a and b is ", anc.data
+			return True
+	else:
+		return False
+
+if __name__ == '__main__':
+	node3 = Node(3, None, None)
+	node4 = Node(4, None, None)
+	node5 = Node(5, None, None)
+	node2 = Node(2, node4, node5)
+	node1= Node(1, node2, node3)
+
+	root = node1
+
+	inp1 = node3
+	inp2 = node4
+
+	check_lca(root, inp1, inp2)
+	
+
+
+
+
+4.
+from collections import defaultdict
+  
+class Graph:
+  
+    def __init__(self, vertices):
+        self.V = vertices 
+        self.graph = defaultdict(list) 
+
+    def add_edge(self,u,v):
+        self.graph[u].append(v)
+     
+    def is_reachable(self, s, d):
+        """
+            Utilize Breadth First Search to
+            check path between two vertices
+             s (source) and d (destination)
+
+        """
+        visited =[False]*(self.V)
+  
+        queue=[]
+        queue.append(s)
+        visited[s] = True
+  
+        while queue:
+            n = queue.pop(0)
+            if n == d:
+                return True
+            for i in self.graph[n]:
+                if visited[i] == False:
+                    queue.append(i)
+                    visited[i] = True
+        return False
+
+if __name__ == '__main__':
+  
+    g = Graph(5)
+    g.add_edge(0, 1)
+    g.add_edge(0, 2)
+    g.add_edge(1, 2)
+    g.add_edge(2, 0)
+    g.add_edge(2, 3)
+    g.add_edge(3, 4)
+     
+    u =1; v = 4
+     
+    if g.is_reachable(u, v):
+        print("There is a path from %d to %d" % (u,v))
+    else :
+        print("There is no path from %d to %d" % (u,v))
+     
+    u = 4; v = 1
+    if g.is_reachable(u, v) :
+        print("There is a path from %d to %d" % (u,v))
+    else :
+        print("There is no path from %d to %d" % (u,v))

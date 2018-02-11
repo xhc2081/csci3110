@@ -1,0 +1,571 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Language" content="en-us" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Chain Matrix Multiplication</title>
+<style type="text/css">
+.style1 {
+				font-size: large;
+}
+.style2 {
+				color: #FF00FF;
+}
+.style3 {
+				font-size: x-large;
+}
+.style4 {
+				font-size: large;
+				text-align: center;
+}
+.style5 {
+				font-size: x-large;
+				color: #800000;
+}
+.style6 {
+				font-size: large;
+				margin-left: 120px;
+}
+.style7 {
+				font-size: large;
+				margin-left: 80px;
+}
+.style9 {
+				font-style: normal;
+}
+.style13 {
+				font-size: large;
+				text-align: left;
+				margin-left: 160px;
+}
+.style14 {
+				font-size: large;
+				text-align: left;
+				margin-left: 200px;
+}
+.style15 {
+				color: #FF0000;
+}
+.style16 {
+				margin-left: 120px;
+}
+.style10 {
+				font-size: large;
+}
+.style19 {
+				font-family: "Blackadder ITC";
+				text-align: right;
+}
+.style20 {
+				font-family: "Blackadder ITC";
+				text-align: left;
+}
+</style>
+</head>
+
+<body background="../../../Maingif/Bck2.gif" link="#0000ff" vlink="#0000ff" alink="#ff0000">
+
+<center>
+<p> <font size="4"> <img src="../../../Maingif/redline.gif" height="2" width="640"/></font></p>
+<h2><font size="6">Matrix-chain Multiplication&nbsp; Problem</font></h2>
+<p><font size="4"><img src="../../../Maingif/redline.gif" height="2" width="640"/></font></p>
+</center>
+<p class="style10">&nbsp;</p>
+<p class="style1">The chain matrix multiplication problem is perhaps the most 
+popular example of dynamic programming used in the upper undergraduate course 
+(or review basic issues of dynamic programming in advanced algorithm&#39;s class).</p>
+<p class="style1">The chain matrix multiplication problem involves the question 
+of determining the optimal sequence for performing a series of operations. This 
+general class of problem is important in complier design for code optimization 
+and in databases for query optimization. We will study the problem in a very 
+restricted instance, where the dynamic programming issues are clear. Suppose that our problem is to multiply a chain of <em>n</em> matrices
+<em>A</em><sub>1</sub> <em>A</em><sub>2</sub> 
+... <em>A</em><sub><em>n</em></sub>. Recall (from your discrete structures course), matrix multiplication is an associative but not a 
+commutative operation. This means that you are free to parenthesize the above 
+multiplication however we like, but we are not free to rearrange the order of 
+the matrices. Also, recall that when two (non-square) matrices are being 
+multiplied, there are restrictions on the dimensions. </p>
+<p class="style1">Suppose, matrix <em>A</em> has <em>p</em> rows and <em>q</em> columns 
+i.e., the dimension of matrix <em>A</em> is <em>p</em> × <em>q</em>. You can multiply a matrix <em>A</em> of <em>p</em> × <em>q</em> 
+dimensions <em>times</em> a matrix <em>B</em> of dimensions <em>q</em> × <em>r</em>, and the result will be a 
+matrix <em>C</em> with dimensions <em>p</em> × <em>r</em>. That is, you can 
+multiply two matrices if they are <span class="style2"><strong>compatible: </strong></span>the number of columns of <em>A</em> 
+must equal the number of rows of <em>B</em>.</p>
+<p class="style1">In particular, for 1 ≤ <em>i</em> ≤&nbsp; <em>p</em> and 1 ≤ 
+<em>j</em> ≤ <em>r</em>, we have</p>
+<p class="style4"><em>C</em>[<em>i</em>, <em>j</em>] = <span class="style3">∑</span><sub>1 ≤ k ≤ q</sub> 
+<em>A</em>[<em>i</em>, <em>k</em>] <em>B</em>[<em>k</em>, <em>j</em>].</p>
+<p class="style1">There are <em>p</em> . <em>r</em> total entries in <em>C</em> and each takes O(<em>q</em>) time to 
+compute, thus the total time to multiply these 
+two matrices is dominated by the number of scalar multiplication, which is
+<em>p</em> . <em>q</em> . <em>r</em>.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Problem Formulation</strong></p>
+<p class="style1">Note that although we can use any legal parenthesization, 
+which will lead to a 
+valid result. But, not all parenthesizations involve the same number of operations. 
+To understand this point, consider the 
+problem of a chain <em>A</em><sub>1</sub>, <em>A</em><sub>2</sub>, <em>A</em><sub>3</sub> of three matrices 
+and suppose</p>
+<p class="style6"><em>A</em><sub>1</sub> be of dimension 10 × 100<em><br />
+A</em><sub>2</sub> be of dimension 100 × 5<em><br />
+A</em><sub>3</sub> be of dimension 5 × 50</p>
+<p class="style1">Then,</p>
+<p class="style7">MultCost[((<em>A</em><sub>1</sub> <em>A</em><sub>2</sub>) <em>A</em><sub>3</sub>)] = (10 . 100 . 5) +&nbsp; (10 . 5 . 50) = 7,500 scalar 
+multiplications.</p>
+<p class="style7">MultCost[(<em>A</em><sub>1</sub> (<em>A</em><sub>2</sub> <em>A</em><sub>3</sub>))] = (100 . 5 . 50) + (10 . 100 . 50) = 75,000 
+scalar multiplications.</p>
+<p class="style1">It is easy to see that even for this small example, computing the product according 
+to first parenthesization is 10 times faster.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>The Chain Matrix Multiplication Problem</strong></p>
+<p class="style1">Given a sequence of <em>n</em> matrices <em>A</em><sub>1</sub>, 
+<em>A</em><sub>2</sub>, ... <em>A</em><sub><em>n</em></sub>, and their 
+dimensions <em>p</em><sub>0</sub>, <em>p</em><sub>1</sub>, <em>p</em><sub>2</sub>, ...,
+<em>p</em><sub><em>n</em></sub>, where where <em>i</em> = 1, 2, ..., <em>n</em>, matrix 
+<em>A</em><sub><em>i</em></sub> has dimension <em>p</em><sub><em>i </em>− 
+1</sub> × <em>p</em><sub><em>i</em></sub>, determine the order of multiplication that 
+minimizes the the number of scalar multiplications.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1"><span class="style3">Equivalent formulation</span> (perhaps 
+more easy to work with!)</p>
+<p class="style1">Given <em>n</em> matrices, <em>A</em><sub>1</sub>, <em>A</em><sub>2</sub>, 
+... <em>A</em><sub><em>n</em></sub>, where for 1 ≤ <em>i</em> ≤ <em>n</em>, <em>A</em><sub><em>i</em></sub> 
+is a <em>p</em><sub><em>i </em>− 
+1</sub> × <em>p</em><sub><em>i</em></sub>, matrix, parenthesize the product <em>A</em><sub>1</sub>, 
+<em>A</em><sub>2</sub>, ... <em>A</em><sub><em>n</em></sub> so as to minimize 
+the total cost, assuming that the cost of multiplying an <em>p</em><sub><em>i </em>− 
+1</sub>× <em>p</em><sub><em>i</em></sub> matrix by a <em>p</em><sub><em>i </em></sub>× 
+<em>p</em><sub><em>i + </em>1</sub> 
+matrix using the naive algorithm is <em>p</em><sub><em>i </em>− 
+1</sub>×<em> p</em><sub><em>i </em></sub>× <em>p</em><sub><em>i + </em>1</sub>.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1">Note that this algorithm does not perform the multiplications, 
+it just figures out the best order in which to perform the multiplication 
+operations.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Naive Algorithm</strong></p>
+<p class="style1">Well, lets start from the obvious! Suppose we are given a list 
+of <em>n</em> matrices. lets attack the problem with brute-force and try all possible parenthesizations. It is easy to see that the number of 
+ways of parenthesizing an expression is very large. For instance, if you have just one item in 
+the list, 
+then there is only one way to parenthesize. Similarly, if you have <em>n</em> item in the 
+list, then there are <em>n</em> 
+− 1 places where you could split the list with the outermost pair of 
+parentheses, namely just after first item, just after the second item, and so on 
+and so forth, and just after the (<em>n</em> − 1)<sup>th</sup> item in the list.</p>
+<p class="style1">On the other hand, when we split the given list just after the <em>k</em><sup>th</sup> item, we create two sublists 
+to be parenthesized, one with <em>k</em> items, and the other with <em>n</em> − <em>k</em> items. 
+After splitting, we 
+could consider all the ways of parenthesizing these sublists (brute force in 
+action). If there are L ways to parenthesize the left sublist and R ways to 
+parenthesize the right sublist and since these are independent choices, then the total is L 
+<em>times</em> R. This suggests the 
+following recurrence for P(n), the number of
+different ways of parenthesizing <em>n</em> items:</p>
+<p class="style4">
+<img alt="Recurrence for naive algorithm" src="Dynamic-Gifs/matrixChain-recurrence-1.gif" height="84" /></p>
+<p class="style1">This recurrence is related to a famous function in combinatorics called the 
+Catalan numbers, which in turn is related to the number of different binary 
+trees on <em>n</em> nodes. The solution to this recurrence is the sequence of 
+Catalan numbers. In particular <em>P</em>(<em>n</em>) = <em>C</em>(<em>n</em> 
+− 1), where <em>C</em>(<em>n</em>) is the <em>n</em><sup>th</sup> Catalan 
+number. And, by applying Stirling&#39;s formula, we get the lower bound on the 
+sequence. That is,</p>
+<p class="style4">
+<img alt="Catalan number" src="Dynamic-Gifs/matrixChainCatalan.gif" /></p>
+<p class="style1">since 4<sup><em>n</em></sup> is exponential 
+and <em>n</em><sup>3/2</sup> is just a polynomial, the exponential will dominate 
+the expression, implying that function 
+grows very fast. Thus, the number of solutions is exponential in <em>n</em>, and 
+the brute-force method of exhaustive search is a poor strategy for determining 
+the optimal parenthesization of a matrix chain. Therefore, the naive algorithm 
+will not be practical except for very small <em>n</em>.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><em><strong>Dynamic Programming Approach</strong></em></p>
+<p class="style1">The first step of the dynamic programming paradigm is to 
+characterize the structure of an optimal solution. For the chain matrix problem, like other dynamic programming problems, involves 
+determining the optimal structure (in this case, a parenthesization). We would 
+like to break the 
+problem into subproblems, whose solutions can be combined to obtain a solution 
+to the global 
+problem.</p>
+<p class="style1">For convenience, let us adopt the notation <em>A</em><sub><em>i </em>.. <em>j</em></sub>, 
+where <em>i</em> ≤ <em>j</em>, for the result from evaluating the product&nbsp;
+<em>A</em><sub><em>i</em></sub> <em>A</em><sub><em>i </em>+ 1</sub> ... <em>A</em><sub><em>j</em></sub>. 
+That is,</p>
+<p class="style4"> <em>A</em><sub><em>i </em>.. <em>j</em></sub> ≡<em> A</em><sub><em>i</em></sub> <em>A</em><sub><em>i </em>+ 1</sub> ... <em>A</em><sub><em>j </em></sub>
+,&nbsp;&nbsp;&nbsp; where <em>i</em> ≤ <em>j</em>,</p>
+<p class="style1">It is easy to see that is a matrix <em>A</em><sub><em>i </em>.. <em>j</em></sub>&nbsp; 
+is of dimensions <em>p</em><sub><em>i</em></sub> × 
+<em>p</em><sub><em>i + </em>1</sub>.</p>
+<p class="style1">In parenthesizing the expression, we can consider the highest level of 
+parenthesization. At this level we are simply multiplying two matrices together. 
+That is, for any <em>k</em>, 1 ≤&nbsp; <em>k</em> ≤&nbsp; <em>n</em> − 1, </p>
+<p class="style4"> <em>A</em><sub>1<em>..n</em></sub> =<em> A</em><sub>1<em>..k</em></sub> <em>&nbsp;A</em><sub><em>k</em>+1<em>..n</em></sub> 
+.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1">Therefore, the problem of determining the optimal sequence of multiplications is 
+broken up into two questions: </p>
+<p class="style6">Question 1: How do we decide where to split the chain? (What 
+is <em>k</em>?)&nbsp;&nbsp;&nbsp; </p>
+<p class="style6">Question 2: How do we parenthesize the subchains <em>A</em><sub>1<strong>..</strong><em>k</em></sub> <em>&nbsp;A</em><sub><em>k</em>+1<em>..n</em></sub>? </p>
+<p class="style1">The subchain problems can be 
+solved by recursively applying the same scheme. On the other hand, to determine 
+the best value of <em>k</em>, we will consider all possible values of <em>k</em>, and 
+pick the best of 
+them.
+Notice that this problem satisfies the principle of optimality, because once we 
+decide to break the sequence into the product , we should compute each 
+subsequence optimally. That is, for the global problem to be solved optimally, 
+the subproblems must be solved optimally as well.</p>
+<p class="style1">The key observation is that the parenthesization of the 
+&quot;prefix&quot; subchain <em>A</em><sub>1<em>..k </em></sub> within this optimal 
+parenthesization of <em>A</em><sub>1<em>..n</em></sub>. must be an
+<span class="style2">optimal</span> parenthesization of <em>A</em><sub>1<em>..k</em></sub>.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Dynamic Programming Formulation</strong></p>
+<p class="style1">The second step of the dynamic programming paradigm is to 
+define the value of an optimal solution recursively in terms of the optimal 
+solutions to subproblems. To help us keep track of solutions to subproblems, we will use a table, and 
+build the table in a bottom­up manner. For 1 ≤ <em>i</em> ≤ <em>j </em>≤ <em>n</em>, let
+<em>m</em>[<em>i</em>, <em>j</em>] be the minimum number 
+of scalar multiplications needed to compute the <em>A</em><sub><em>i..j</em></sub>. The optimum cost can be described by the 
+following recursive formulation.</p>
+<p class="style1">Basis: Observe that if <em>i</em> = <em>j</em> then the 
+problem is trivial; the sequence contains only 
+one matrix, and so the cost is 0. (In other words, there is nothing to multiply.) Thus, </p>
+<p class="style4"><em>m</em>[<em>i, i</em>] = 0 for <em>i</em> = 1, 2, ..., n.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1">Step: If <em>i</em> ≠ <em>j</em>, then we are asking about the product 
+of the subchain <em>A</em><sub><em>i..j </em></sub>and we take advantage of the 
+structure of an optimal solution. We assume that the optimal parenthesization 
+splits the product, <em>A</em><sub><em>i..j</em></sub> into for each value of
+<em>k</em>, 1 ≤&nbsp; <em>k</em> ≤&nbsp; <em>n</em> − 1 as <em>A</em><sub><em>i..k</em></sub> <em>
+. A</em><sub><em>k</em>+1<em>..j</em></sub>.<br />
+</p>
+<p class="style1">The optimum time to compute is <em>m</em>[<em>i</em>, <em>k</em>], and the optimum time 
+to compute is <em>m</em>[<em>k</em> + 1, <em>j</em>]. We may assume that these values have been computed 
+previously and stored in our array. Since <em>A</em><sub><em>i..k </em></sub> is a matrix, and <em>
+A</em><sub><em>k</em>+1<em>..j </em></sub>is a matrix, the time 
+to multiply them is <em>p</em><sub><em>i </em>−<em> </em>1 </sub>.<em> p</em><sub><em>k</em></sub> 
+. 
+<em>p</em><em><sub>j</sub>. </em>This suggests the following recursive rule for computing <em>m</em>[<em>i</em>, 
+<em>j</em>].</p>
+<p class="style1">&nbsp;</p>
+<p class="style4">
+<img alt="Matrix chain recurrence" src="Dynamic-Gifs/matrixChain-recurrence-3.gif" width="603" height="87" /></p>
+<p class="style1">To keep track of optimal subsolutions, we store the value of <em>k</em> 
+in a table <em>s</em>[<em>i</em>, <em>j</em>]. Recall, <em>k</em> is the place 
+at which we split the product <em>A</em><sub><em>i..j</em></sub> to get an 
+optimal parenthesization. That is,</p>
+<p class="style4"><em>s</em>[<em>i</em>, <em>j</em>] = <em>k</em> such that <em>m</em>[<em>i</em>,
+<em>j</em>] = <em>m</em>[<em>i</em>, <em>k</em>] + <em>m</em>[<em>k</em> + 1,
+<em>j</em>] + <em>p</em><sub><em>i </em>−<em> </em>1 </sub>.<em> p</em><sub><em>k</em></sub> 
+. 
+<em>p<sub>j</sub>. </em>
+</p>
+<p class="style1"></p>
+<p class="style5"><strong>Implementing the Rule</strong></p>
+<p class="style1">The third step of the dynamic programming paradigm is to 
+construct the value of an optimal solution in a bottom-up fashion. It is pretty straight forward to translate the above 
+recurrence into a procedure. As we have remarked in the introduction that the 
+dynamic programming is nothing but the fancy name for divide-and-conquer with a 
+table. But here in dynamic programming, as opposed to divide-and-conquer, we solve subproblems sequentially. It 
+means the trick here is to solve them in the right order so that whenever the 
+solution to a subproblem is needed, it is already available in the table.</p>
+<p class="style1">Consequently, in our problem the only tricky part is arranging the order in which to compute the 
+values (so that it is readily available when we need it). In the process of computing 
+<em>m</em>[<em>i</em>,<em> j</em>] we will need to access values <em>m</em>[<em>i</em>,<em> 
+k</em>] and <em>m</em>[<em>k</em> + 1, <em>j</em>] for each value of <em>k</em> lying between
+<em>i</em> and <em>j</em>. This suggests that we should 
+organize our computation according to the number of matrices in the subchain. 
+So, lets work on the subchain:</p>
+<p class="style1">Let L = <em>j</em> − <em>i</em> + 1 denote the length of the
+subchain being multiplied. The subchains of length 1 (<em>m</em>[<em>i</em>,<em> i</em>]) are trivial. Then 
+we build up by computing the subchains of length 2, 3, ..., <em>n</em>. The final answer is 
+<em>m</em>[1, <em>n</em>]. </p>
+<p class="style1">Now set up the loop: Observe that if a subchain of 
+length L starts at position <em>i</em>, then <em>j</em> = <em>i</em> + L − 1. 
+Since, we would like to keep <em>j</em> in bounds, this means we want <em>j</em> 
+≤ <em>n</em>, this, in turn, means that we want <em>i</em> + L − 1 ≤ <em>n</em>, 
+actually what we are saying here is that we want <em>i</em> ≤ <em>n</em> − L +1. 
+This gives us the closed interval for <em>i</em>. So our loop for <em>i</em> 
+runs from 1 to <em>n</em> − L + 1.</p>
+<p class="style1">&nbsp;</p>
+<p class="style6">Matrix-Chain(array <em>p</em>[1 .. <em>n</em>], int <em>n</em>) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Array <em>s</em>[1 .. <em>n</em> − 1, 2 .. <em>n</em>];<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FOR</strong> <em>i</em> = 1 
+<strong>TO</strong> <em>n</em> <strong>DO</strong> <em>m</em>[<em>i</em>, <em>i</em>] = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // initialize<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FOR</strong> L = 2 
+<strong>TO</strong> <em>n</em> <strong>DO</strong> {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // L=length of subchain<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+FOR</strong> <em>i</em> = 1 <strong>TO</strong> <em>n</em> − L + 1 do {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>j</em> = <em>i</em> + L − 1;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>m</em>[<em>i</em>, <em>j</em>] = infinity;<br />
+<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+FOR</strong> <em>k</em> = <em>i</em> <strong>TO</strong> <em>j </em>− 1 <strong>
+DO</strong> {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // check all splits<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>q</em> = <em>m</em>[<em>i</em>,<em> k</em>] + <em>m</em>[<em>k</em> + 1, <em>j</em>] +
+<em>p</em>[<em>i</em> − 1] <em>p</em>[<em>k</em>]<em> p</em>[<em>j</em>];<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>IF</strong> (<em>q</em> &lt; m[<em>i</em>, <em>j</em>]) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>m</em>[<em>i</em>, <em>j</em>] = <em>q</em>; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>s</em>[<em>i</em>, <em>j</em>] = <em>k</em>; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } 
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } 
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return <em>m</em>[1, <em>n</em>](final cost) and <em>s</em> (splitting markers);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>
+<p class="style1"><strong>Example </strong>[on page 337 in CLRS]: The <em>m</em>-table 
+computed by MatrixChain procedure for <em>n</em> = 6 matrices <em>A</em><sub>1</sub>,
+<em>A</em><sub>2</sub>,<em> A</em><sub>3</sub>,<em> A</em><sub>4</sub>,<em> A</em><sub>5</sub>,<em> 
+A</em><sub>6</sub> and their dimensions 30, 35, 15, 5, 10, 20, 25.</p>
+<p class="style4">
+<img alt="The m-matrix table computed by Chain-Matrix-Order for n=6." src="Dynamic-Gifs/chainMatrix-m-table.gif" /></p>
+<p class="style1">Note that the m-table is rotated so that the main diagonal 
+runs horizontally. Only the main diagonal and upper triangle is used.</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Complexity Analysis</strong></p>
+<p class="style1">Clearly, the space complexity of this procedure Ο(<em>n</em><sup>2</sup>). 
+Since the tables <em>m</em> and <em>s</em> require Ο(<em>n</em><sup>2</sup>) space. As far as the 
+time complexity is concern, a simple inspection of the for-loop(s) structures 
+gives us a running time of the procedure. Since, the three for-loops are nested 
+three deep, and each one of them iterates at most <em>n</em> times (that is to 
+say indices L, <em>i</em>, and <em>j</em> takes on at most <em>n</em> − 1 
+values). Therefore, The running time of this procedure is Ο(<em>n</em><sup>3</sup>).</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Extracting Optimum Sequence</strong></p>
+<p class="style1">This is Step 4 of the dynamic programming paradigm in which we 
+construct an optimal solution from computed information. The array <em>s</em>[<em>i</em>, <em>j</em>] can be used to extract the actual sequence. 
+The basic idea is to keep a split marker in <em>s</em>[<em>i</em>, <em>j</em>] 
+that indicates 
+what is the best split, that is, what value of <em>k</em> leads to the minimum value of 
+<em>m</em>[<em>i</em>,<em> 
+j</em>]. <em>s</em>[<em>i</em>, <em>j</em>] =
+<em>k</em> tells us that the best way to multiply the subchain is to first multiply the
+subchain <em>A</em><sub><em>i..k</em></sub> and then multiply the subchain <em>
+&nbsp;A</em><sub><em>k</em>+1<em>..j</em></sub>, and finally multiply these two 
+subchains together. 
+Intuitively, <em>s</em>[<em>i</em>, <em>j</em>] tells us what multiplication to perform last. 
+Note that we only need to store <em>s</em>[<em>i</em>, <em>j</em>] when we have at least two matrices, that is, if 
+<em>j</em> &gt; <em>i</em>. 
+The actual multiplication algorithm uses the <em>s</em>[<em>i</em>, <em>j</em>] value to determine how to 
+split
+the current sequence. Assume that the matrices are stored in an array of 
+matrices <em>A</em>[1..<em>n</em>], and that <em>s</em>[<em>i</em>, <em>j</em>] is global to this recursive procedure. The procedure 
+returns a
+matrix.</p>
+<p class="style1">&nbsp;</p>
+<p class="style6">Mult(<em>i</em>, <em>j</em>) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>if</strong><em> </em>(<em>i</em> = = <em>j</em>) return <em>A</em>[<em>i</em>];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // 
+Basis<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>else</strong> {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>k</em> = <em>s</em>[<em>i</em>,<em> j</em>];<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+X = Mult(<em>i</em>, <em>k</em>];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // X=A[i]A[k]<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Y = Mult(<em>k</em> + 1, <em>j</em>];&nbsp;&nbsp;&nbsp;&nbsp; // Y=A[k+1]A[j]<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>return</strong> XY;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // multiply matrices X and Y<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}</p>
+<span class="style1">Again, we rotate the s-table so that the main diagonal runs 
+horizontally but in this table we use only upper triangle (and not the main 
+diagonal).</span><p class="style4">
+<img alt="The s-table computer by Matrix-Chain-Ordre for n = 6." src="Dynamic-Gifs/matrixChain-s-table.gif" /></p>
+<p class="style1">In the example, the procedure computes the chain matrix 
+product according to the parenthesization ((<em>A</em><sub>1</sub>(<em>A</em><sub>2</sub><em> 
+A</em><sub>3</sub>))((<em>A</em><sub>4</sub><em> A</em><sub>5</sub>)<em> A</em><sub>6</sub>).</p>
+<p class="style1">&nbsp;</p>
+<p class="style5"><strong>Recursive Implementation</strong></p>
+<p class="style1">Here we will implement the recurrence&nbsp; in the following 
+recursive procedure that determines m[i, j], the minimum number of scalar 
+multiplications needed to compute the chain matrix product Ai..j. The recursive 
+formulation have been set up in a top-down manner. Now consider the following recursive implementation of the chain­matrix
+multiplication algorithm. The call Rec­Matrix­Chain(p, i, j) computes and 
+returns
+the value of m[i, j]. The initial call is Rec­Matrix­Chain(p, 1, n). We only 
+consider
+the cost here.<br />
+</p>
+<p class="style6">Rec-Matrix-Chain(array p, int i, int j) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (i = = j) m[i, i] = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // basic case<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+else {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+m[i, j] = infinity;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // initialize<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+for k = i to j &#8722; 1 do {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // try all 
+possible splits<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cost=Rec-Matrix-Chain(p, i, k) +
+Rec-Matrix-Chain(p, k + 1, j) + p[i − 1]*p[k]*p[j];<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (cost&lt;m[i, j]) then <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m[i, j]= cost; 
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // update if better<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+return m[i,j];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+// return final cost<br />
+}</p>
+<p class="style1">This version, which is based directly on the recurrence (the 
+recursive formulation that we gave for chain matrix problem) seems much simpler. So, what is wrong with this? The answer is the 
+running time is much higher than the algorithm that we
+gave before. In fact, we will see that its running time is exponential in n, 
+which is
+unacceptably slow. </p>
+<p class="style1">Let T(n) be the running time of this algorithm on a sequence of matrices of
+length n, where n = j − i + 1.</p>
+<p class="style1">If i = j, then we have a sequence of length 1, and the time is 
+&#920;(1). Otherwise, we do Θ(1)
+work and then consider all possible ways of splitting the sequence of length <em>n</em> into two sequences, one of length 
+<em>k</em> and the other of length <em>n</em> − <em>k</em>, and invoke 
+the
+procedure recursively on each one. So, we get the following recurrence, defined 
+for n &#8805; 1.<br />
+</p>
+<p class="style4">
+<img alt="matrixChain-RecRecurrence" src="Dynamic-Gifs/recursive-recurrence1.gif" /></p>
+<p class="style1">Note that we have replaced the Θ(1)&#39;s with the constant 1.</p>
+<p class="style1"><strong>Claim</strong>: T(<em>n</em>) = 2<sup><em>n </em>− 1</sup>.</p>
+<p class="style1">Proof. We shall prove by induction on <em>n</em>. This is trivially 
+true for <em>n</em> = 1. (Since T(1) ≥ 1 = 2<sup>0</sup>.) Our induction hypothesis is 
+that T(<em>m</em>) = 2<sup><em>m </em>− 1</sup>. for all m &lt; n. Using this 
+hypothesis, we have</p>
+<p class="style13">T(n) = 1 + <span class="style3">&#8721;</span><sub>1&#8804;
+<em>k</em>≤ <em>n-</em>1<em> </em></sub>(T(<em>k</em>) + T(<em>n</em> − <em>k</em>))</p>
+<p class="style14">≥ 1 + <span class="style3">&#8721;</span><sub>1&#8804; <em>k</em>≤
+<em>n-</em>1<em> </em></sub>T(<em>k</em>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+-- Ignore the term T(<em>n</em> − <em>k</em>).</p>
+<p class="style14">≥ 1 + <span class="style3">&#8721;</span><sub>1&#8804; <em>k</em>≤
+<em>n-</em>1</sub> (2<sup><em>k </em>−1</sup>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+-- by application of induction hypothesis.</p>
+<p class="style14">= 1 + <span class="style3">&#8721;</span><sub>0&#8804;
+<em class="style9">k</em>≤ <em>n-</em>2</sub> (2<em><sup>k</sup></em>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+-- By application of geometric series formula.</p>
+<p class="style14">= 1 + (2<sup><em>n </em>−1</sup> + 1)</p>
+<p class="style14">= 2<sup><em>n</em> −1</sup>.</p>
+<p class="style1">&nbsp;Therefore, we have T(<em>n</em>) = &#937;(2<sup><em>n</em></sup>).</p>
+<p class="style1">Now the question is why this is so inefficient than that of 
+bottom-up dynamic programming algorithm? If you &quot;unravel&#39;&#39; the recursive calls on a reasonably long example, you will see that 
+the
+procedure is called repeatedly with the same arguments. The bottom-up version
+evaluates each entry exactly once.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1"><span class="style5"><strong>Memoization</strong></span> [I 
+think this should be Memo<span class="style15">r</span>ization but lets stick to 
+the textbook!]</p>
+<p class="style1">Now from very practical viewpoint, we would like to have the 
+nice top-down structure of recursive algorithm with the efficiency of bottom-up 
+dynamic programming algorithm. The question is: is it possible? The answer is 
+yes, using the technique called memoization.</p>
+<p class="style1">The fact that our recursive algorithm runs in exponential time 
+is simply due to the spectacular redundancy in the number of time it issues 
+recursive calls. Now our problem is how could we eliminate all this redundancy? 
+We could store the value of &quot;cost&quot; in a globally accessible place the first time 
+we compute it and then simply use this precomputed value in place of all future 
+recursive calls. This technique of saving values that have already been computed 
+is referred to as <span class="style2"><strong>memoization</strong></span>.</p>
+<p><span class="style1">The idea is as follow. Let&#39;s reconsider the function Rec­Matrix­Chain() given above.
+It&#39;s job is to compute m[i, j], and return its value. The main
+problem with the procedure is that it recomputes the same entries over and over.
+So, we will fix this by allowing the procedure to compute each entry exactly 
+once.
+One way to do this is to initialize every entry to some special value (e.g.
+UNDEFINED). Once an entries value has been computed, it is never recomputed.
+</span></p>
+<p><span class="style1">In essence, what we are doing here is we are maintaining 
+a table with subproblem solution (like dynamic programming algorithm), but 
+filling up the table more like recursive algorithm. In other words, we would 
+like to have best of both worlds!</span></p>
+<p class="style16"><span class="style1">Mem-Matrix-Chain(array <em>p</em>, int
+<em>i</em>, int <em>j</em>) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>if</strong> (<em>m</em>[<em>i</em>,
+<em>j</em>] != UNDEFINED) <strong>then </strong><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>return</strong> <em>m</em>[<em>i</em>, <em>j</em>];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // already defined<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>else if</strong> ( i = = j) 
+<strong>then</strong> <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>m</em>[<em>i</em>, <em>i</em>] = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // basic case<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>else</strong> {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>m</em>[<em>i</em>, <em>j</em>] = infinity;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // initialize<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>for</strong> <em>k</em> = <em>i</em> to <em>j</em>
+</span>−<span class="style1"> 1 <strong>do</strong> {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // try all splits<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cost = Mem-Matrix-Chain(<em>p</em>,<em> i</em>,<em> k</em>) + Mem-Matrix-Chain(<em>p</em>,<em> k + 1</em>,<em> j</em>) + p[<em>i</em>
+</span>−<span class="style1"> 1] p[<em>k</em>] p[<em>j</em>];<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>if</strong> (cost &lt; <em>m</em>[<em>i</em>, <em>j</em>]) <strong>then</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+// update if better<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>m</em>[<em>i</em>, <em>j</em>] = cost; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } 
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>return</strong> <em>m</em>[<em>i</em>,
+<em>j</em>];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+// return final cost<br />
+} 
+</span></p>
+<p class="style1">Like the dynamic programming algorithm, this version runs in time 
+Ο(<em>n</em><sup>3</sup>). Intuitively, 
+the reason is this: when we see the subroblem for the first time, we compute its 
+solution and store in the table. After that whenever we see the subproblem 
+again, we simply looked up in the table and returned the solution. So, we are 
+computing each of the Ο(<em>n</em><sup>2</sup>) table entry once and, and the work needed to compute one table
+entry (most of it in the for­loop) is at most Ο(<em>n</em>). So, memoization 
+turns an Ω(2<sup><em>n</em></sup>)-time algorithm into an time Ο(<em>n</em><sup>3</sup>)-algorithm.</p>
+<p class="style1">As a matter of fact, in general, Memoization is slower than 
+bottom-up method, so it is not usually 
+used in practice.
+However, in some dynamic programming problems, many of the table entries are simply not needed,
+and so bottom-up computation may compute entries that are never needed.
+In these cases, we use memoization to compute the table entry once.
+If you know that most of the table will not be needed, here is a way to save 
+space.
+Rather than storing the whole table explicitly as an array, you can store the 
+&quot;defined&quot; entries of the table in a hash table, using the index pair (i, j) as 
+the hash
+key.</p>
+<p class="style1">See Chapter 11 in CLRS for more information on hashing.</p>
+<p class="style1">&nbsp;</p>
+<p class="style1">&nbsp;</p>
+
+<center>
+<center>
+<p><font size="4"><img src="../../../Maingif/redline.gif" height="2" width="640"></font></p>
+<p>
+<a href="../../algorithm.html"> <font size="4"> <img src="../../../Maingif/back.gif"
+ border="0" height="47" width="49"></font></a></p>
+</center>
+<p class="style19">Updated: March 18, 2010.</p>
+</center>
+
+</body>
+
+</html>

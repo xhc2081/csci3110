@@ -1,0 +1,46 @@
+Q4
+Two problems without Optimal Substructure
+1. Longest Path Problem
+
+	
+
+
+
+
+	Goal of the Problem: Find the longest path between two vertices without repeating an edge.
+	LongestPath(A,C)
+	solution: (A-E-D-C)
+
+
+
+
+
+
+	If Principle of Optimality applies to Longest Path Problem:
+	Split up the Problem into Optimal Sub Parts
+	LongestPath(A,C)
+	LongestPath(A,D) + (D-C) Wrong
+
+	The sub solutions do not combine to form the overall optimal solution
+
+	The Longest Path Problem does not exhibit Optimal Substructure
+
+	Not a candidate problem for a Dynamic Programming Solution
+
+2. Maximum Clique Problem
+
+
+
+
+	Definition: Clique - Vertices are all attached to each other.
+	Definition: Maximal Clique - A clique with the most vertices in a graph.
+	Vertices = {1,2,3,4,5,6,7,8,9}
+	Maximal Clique = {5,6,7,8,9}
+	Vertices = {1,2,3,4,5,6,7} + {8,9}
+	cliques = {1,2,3,4},{5,6,7} + {8,9}
+
+	We Cannot break down the set of vertices into smaller sub problems and maintain the overall optimal solution.
+
+	This problem does not exhibit optimal sub structure.
+
+	This problem is not a candidate for a dynamic programming solution.

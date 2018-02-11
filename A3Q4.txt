@@ -1,0 +1,83 @@
+HongCheng Xu.
+Q4.
+
+In this question we use DFS written in Python 2.7 to implement the game.
+Let a state = [], whose size is 9, the first 8 elements represent the passengers,
+the last bit is the position of the boat.
+
+# Store the indices of the people
+policeman = 0
+father = 1
+mother = 2
+sons = [3, 4]
+daughter = [5, 6]
+thief = 7
+boat = 8
+driver_index = [policeman, father, mother]
+
+# The start and end state
+Start = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+End = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+def isValidState(state):
+	if state[father] == state[daughter[0]] != state[mother]:
+		return False
+	if state[father] == state[daughter[1]] != state[mother]:
+		return False
+	if state[mother] == state[sons[0]] != state[father]:
+		return False
+	if state[mother] == state[sons[1]] != state[father]:
+		return False
+	if state[policeman] != state[thief]:
+		for i in range(1, boat):
+			if state[i] == state[thief]:
+				return False
+	return True
+
+def expand(cur):
+	expand_list = []
+	
+	# We need to ensure two people on the boat, and we need father
+	# mother or policeman to drive the raft
+	direction = 1 ^ cur[boat]
+	for driver in driver_index:
+		# Find a valid driver
+		if cur[driver] == cur[boat]:
+			for i in range(8):
+				if i != driver:
+					next_state = cur[:]
+					next_state[driver] = next_state[i] = next_state[boat] = direction
+					if isValidState(next_state):
+						expand_list.append(next_state)
+
+	return expand_list
+
+def cross_helper(path, visited, cur):
+	if cur == End:
+		path = visited[:]
+		return True
+	else:
+		next = expand(cur)
+		for next_move in next:
+			if next_move not in visited:
+				# Backtracking
+				visited.append(next_move)
+				if cross_helper(path, visited, next_move):
+					return True
+				visited.pop()
+
+		# No path found
+		return False
+
+def cross():
+	path = []
+	visited = [Start]
+	found = cross_helper(path, visited, Start)
+	if found:
+		print 'The solution is: ', path
+	else:
+		print 'No solution found'
+
+# Call cross() in main function
+cross()
+
